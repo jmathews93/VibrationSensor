@@ -18,12 +18,16 @@ class BasicResource(Resource):
         return self
 
     def render_POST(self, request):
+        f = open('data.csv', "a")
         res = BasicResource()
         res.location_query = request.uri_query
         res.payload = request.payload
         print("\n\n*************************POST PAYLOAD*************************")
         print("* " + str(self.payload))
         print("\n\n*************************POST PAYLOAD*************************")
+        f.write(self.payload)
+        f.close()
+        
         return res
 
     def render_DELETE(self, request):
