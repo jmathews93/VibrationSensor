@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-from coapthon.client.helperclient import HelperClient
+import socket
 import time
 
 
@@ -8,12 +8,18 @@ def main(args):
 	channel = 17
 	GPIO.setmode(GPIO.BCM)
 	GPIO.setup(channel, GPIO.IN)
- 
-	# Setupo Coap Client
+
+	# Setup UDP Client
 	host = args['ipaddress']
-    port = int(args['port'])
-    path = "basic"
-    client = HelperClient(server=(host, port))
+	port = int(args['port'])
+	serverAddressPort = (host, port)
+	UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+
+    # Setup Coap Client
+	# host = args['ipaddress']
+	# port = int(args['port'])
+	# path = 'basic'
+	# client = HelperClient(server=(host, port))
  
 	# Open data file for writing inputs
 	f = open('data.csv', "a")
@@ -26,7 +32,8 @@ def main(args):
 			print(input_value, time.time())
 			data_point = "{},{},{}\n".format(input_value, time.time(), args["deviceNum"])
 			f.write(data_point)
-   			client.post(path, rand_word(random.randint(100, 300)))
+			# client.post(path, data_point)
+			UDPClientSocket.sendto(data_point, serverAddressPort)
 		except KeyboardInterrupt:
 			break
 	f.close()
