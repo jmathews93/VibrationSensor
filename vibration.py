@@ -13,7 +13,9 @@ def main(args):
 	host = args['ipaddress']
 	port = int(args['port'])
 	serverAddressPort = (host, port)
-	UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+	# UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+	TCPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
+	TCPClientSocket.connect(serverAddressPort)
 
     # Setup Coap Client
 	# host = args['ipaddress']
@@ -23,10 +25,11 @@ def main(args):
  
 	# Open data file for writing inputs
 	f = open('data.csv', "a")
-	f.write("data, time, deviceNum")
+	f.write("data, time, deviceNum\n")
  
 	initialBytesToSend = str.encode("data, time, deviceNum\n")
-	UDPClientSocket.sendto(initialBytesToSend, serverAddressPort)
+	# UDPClientSocket.sendto(initialBytesToSend, serverAddressPort)
+	TCPClientSocket.sendall(initialBytesToSend)
 
 	# Continuously read vibration info until CTRL-C
 	while True:
@@ -38,7 +41,8 @@ def main(args):
 			# client.post(path, data_point)
    
 			bytesToSend = str.encode(data_point)
-			UDPClientSocket.sendto(bytesToSend, serverAddressPort)
+			# UDPClientSocket.sendto(bytesToSend, serverAddressPort)
+			TCPClientSocket.sendall(bytesToSend)
 		except KeyboardInterrupt:
 			break
 	f.close()
