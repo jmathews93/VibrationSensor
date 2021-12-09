@@ -24,6 +24,9 @@ def main(args):
 	# Open data file for writing inputs
 	f = open('data.csv', "a")
 	f.write("data, time, deviceNum")
+ 
+	initialBytesToSend = str.encode("data, time, deviceNum\n")
+	UDPClientSocket.sendto(initialBytesToSend, serverAddressPort)
 
 	# Continuously read vibration info until CTRL-C
 	while True:
@@ -33,7 +36,9 @@ def main(args):
 			data_point = "{},{},{}\n".format(input_value, time.time(), args["deviceNum"])
 			f.write(data_point)
 			# client.post(path, data_point)
-			UDPClientSocket.sendto(data_point, serverAddressPort)
+   
+			bytesToSend = str.encode(data_point)
+			UDPClientSocket.sendto(bytesToSend, serverAddressPort)
 		except KeyboardInterrupt:
 			break
 	f.close()

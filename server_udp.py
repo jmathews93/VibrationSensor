@@ -44,10 +44,9 @@ def main(args):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-ip", "--ipaddress", type=str, required=True)
-    parser.add_argument("-f", "--filename", type=str)
+    parser.add_argument("-ip", "--ipaddress", type=str, default='0.0.0.0')
+    parser.add_argument("-f", "--filename", type=str, default='data.csv')
     parser.add_argument("-p", "--port", type=str, default=8080)
-    parser.add_argument("-dn", "--deviceNum", type=int, default=1)
     args = vars(parser.parse_args())
     print(args)
     main(args)
