@@ -1,5 +1,26 @@
 import socket
+import threading
 
+def on_new_client(connection, f):
+    while(True):
+        try:
+            # bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
+            data = connection.recv(16)
+                
+            if data:
+                clientMsg = "Message from Client:{}".format(data)
+                        
+                print("Data: {}".format(data.decode("utf-8")))
+                        
+                # Write to File
+                f.write(data.decode("utf-8"))
+                        
+            else:
+                break
+        except KeyboardInterrupt:
+            connection.close()
+            break
+    f.close()
 
 def main(args):
     
@@ -28,32 +49,21 @@ def main(args):
     f = open('data.csv', "a")
 
     # Listen for incoming datagrams
+    threads = []
+    
     while(True):
         try:
             connection, client_address = TCPServerSocket.accept()
-            while(True):
-                try:
-                    # bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-                    data = connection.recv(16)
-                
-                    if data:
-                        clientMsg = "Message from Client:{}".format(data)
-                        
-                        print("Data: {}".format(data.decode("utf-8")))
-                        
-                        # Write to File
-                        f.write(data.decode("utf-8"))
-                        
-                    else:
-                        break
-                except KeyboardInterrupt:
-                    connection.close()
-                    break
-            f.close()
+            x = threading.Thread(target=on_new_client, args=(connection,f))
+            threads.append(x)
+            x.start()
         except KeyboardInterrupt:
             # Clean up the connection
             print("Shutting Server Down")
             connection.close()
+            
+            for i in threads:
+                i.join()
             break
             
 
