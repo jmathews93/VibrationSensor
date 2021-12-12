@@ -36,7 +36,7 @@ def main(args):
                     # bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
                     data = connection.recv(16)
                 
-                    if data:
+                    if data and data == 1:
                         clientMsg = "Message from Client:{}".format(data)
                         
                         print("Data: {}".format(data.decode("utf-8")))

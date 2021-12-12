@@ -37,12 +37,13 @@ def main(args):
 			input_value = GPIO.input(channel)
 			print(input_value, time.time())
 			data_point = "{},{},{}\n".format(input_value, time.time(), args["deviceNum"])
-			f.write(data_point)
-			# client.post(path, data_point)
+			if data_point == 1:
+				f.write(data_point)
+				# client.post(path, data_point)
    
-			bytesToSend = str.encode(data_point)
-			# UDPClientSocket.sendto(bytesToSend, serverAddressPort)
-			TCPClientSocket.sendall(bytesToSend)
+				bytesToSend = str.encode(data_point)
+				# UDPClientSocket.sendto(bytesToSend, serverAddressPort)
+				TCPClientSocket.sendall(bytesToSend)
 		except KeyboardInterrupt:
 			break
 	f.close()
