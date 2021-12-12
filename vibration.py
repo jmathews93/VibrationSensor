@@ -35,9 +35,9 @@ def main(args):
 	while True:
 		try:
 			input_value = GPIO.input(channel)
-			print(input_value, time.time())
-			data_point = "{},{},{}\n".format(input_value, time.time(), args["deviceNum"])
-			if data_point == 1:
+			if input_value == 1:
+				print(input_value, time.time())
+				data_point = "{},{},{}\n".format(input_value, time.time(), args["deviceNum"])
 				f.write(data_point)
 				# client.post(path, data_point)
    
