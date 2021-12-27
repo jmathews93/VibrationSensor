@@ -1,32 +1,47 @@
 import socket
 import threading
+import csv
 
-def on_new_client(connection, f):
+csv_list = []
+
+def on_new_client(connection):
     while(True):
         try:
             # bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
             data = connection.recv(16)
                 
             if data:
-                clientMsg = "Message from Client:{}".format(data)
+                # f = open('data.csv', "a")
+                # clientMsg = "Message from Client:{}".format(data)
                         
                 print("Data: {}".format(data.decode("utf-8")))
-                        
+                msg = data.decode("utf-8").split(",")
+                msg[2] = msg[2].strip("\r\n")
+                print(msg)
+
+                # Add strings to list
+                csv_list.append(msg)
+
+
                 # Write to File
-                f.write(data.decode("utf-8"))
+                # f.write(data.decode("utf-8"))
+                # f.close()
                         
             else:
                 break
         except KeyboardInterrupt:
             connection.close()
             break
-    f.close()
+    # f.close()
 
 def main(args):
     
     localIP = "0.0.0.0"
     localPort = args['port']
     bufferSize = 2048
+
+    header = ['data', 'time', 'deviceNum']
+    csv_list.append(header)
 
 
 
@@ -44,9 +59,7 @@ def main(args):
     print("Listening for connection...\n")
     TCPServerSocket.listen(1)
 
-    print("UDP server up and listening")
-    
-    f = open('data.csv', "a")
+    print("TCP server up and listening")
 
     # Listen for incoming datagrams
     threads = []
@@ -54,12 +67,18 @@ def main(args):
     while(True):
         try:
             connection, client_address = TCPServerSocket.accept()
-            x = threading.Thread(target=on_new_client, args=(connection,f))
+            x = threading.Thread(target=on_new_client, args=(connection,))
             threads.append(x)
             x.start()
         except KeyboardInterrupt:
             # Clean up the connection
             print("Shutting Server Down")
+
+            f = open('data.csv', "a")
+            writer = csv.writer(f)
+            writer.writerows(csv_list)
+            f.close()
+
             connection.close()
             
             for i in threads:
