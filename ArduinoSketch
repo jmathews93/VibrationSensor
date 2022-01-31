@@ -1,0 +1,94 @@
+
+#include <SPI.h>
+#include <WiFiNINA.h>
+
+
+
+int vibr_Pin = 3;
+
+char ssid[] = "MacAd";          //  your network SSID (name)
+char pass[] = "password";   // your network password
+unsigned long myTime;
+
+int status = WL_IDLE_STATUS;
+IPAddress server(192,168,2,1);
+
+// Initialize the client library
+WiFiClient client;
+
+void setup(){
+  Serial.begin(9600);
+  Serial.println("Attempting to connect to WPA network...");
+  Serial.print("SSID: ");
+  Serial.println(ssid);
+
+  if (WiFi.status() == WL_NO_MODULE) 
+  {
+    Serial.println("Communication with WiFi module failed!");
+    // don't continue
+    while (true);
+  }
+
+  
+
+  String fv = WiFi.firmwareVersion();
+  if (fv < WIFI_FIRMWARE_LATEST_VERSION) 
+  {
+    Serial.println("Please upgrade the firmware");
+  }
+
+
+
+  while (status != WL_CONNECTED) 
+  {
+    Serial.print("Attempting to connect to WPA SSID: ");
+    Serial.println(ssid);
+    // Connect to WPA/WPA2 network:
+    status = WiFi.begin(ssid, pass);
+    // wait 10 seconds for connection:
+    delay(10000);
+    
+  }
+
+  Serial.print("You're connected to the network");
+
+  Serial.println("\nStarting connection to server...");
+  
+  Serial.println("Connected to wifi");
+
+  pinMode(vibr_Pin, INPUT); //set vibr_Pin input for measurment
+  Serial.begin(9600); //init serial 9600
+  
+  
+}
+void loop(){
+  if (client.connect(server, 8080)) 
+  {
+    client.println("Client 4 Connected");
+    
+
+    while(client.connect(server, 8080))
+    {
+//      client.println("Data,Time,DeviceNum");
+
+      long measurement =TP_init();
+      delay(50);
+      String comma = ",";
+
+      if(measurement != 0)
+      {
+        Serial.println(measurement+comma+millis()+comma+3);
+        client.println(measurement+comma+millis()+comma+"3");
+
+      }
+    }
+  }
+
+//  myTime = millis();
+}
+
+long TP_init(){
+  delay(10);
+  long measurement=pulseIn (vibr_Pin, HIGH);  //wait for the pin to get HIGH and returns measurement
+  return measurement;
+}
