@@ -16,11 +16,14 @@ def on_new_client(connection):
                         
                 print("Data: {}".format(data.decode("utf-8")))
                 msg = data.decode("utf-8").split(",")
-                msg[2] = msg[2].strip("\r\n")
-                print(msg)
-
-                # Add strings to list
-                csv_list.append(msg)
+                try:
+                    msg[2] = msg[2].strip("\r\n")
+                    print(msg)
+                    # Add strings to list
+                    csv_list.append(msg)
+                except:
+                    print("")
+                
 
 
                 # Write to File
@@ -74,7 +77,7 @@ def main(args):
             # Clean up the connection
             print("Shutting Server Down")
 
-            f = open('data.csv', "a")
+            f = open('data.csv', "w")
             writer = csv.writer(f)
             writer.writerows(csv_list)
             f.close()
